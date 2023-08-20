@@ -190,241 +190,20 @@ class MoaiMLPNet(Module):
         self.embedlayers = None
         self.tanh = torch.nn.Tanh()
 
-
-        if self.arch == 'archjaw4':
-            self.layers = ModuleList([
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, 4, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(4, 8, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(8, 16, context_dim,time_dim,2),
-                    ScaleShiftGNMLPLayerSimple(16, 32, context_dim,time_dim,4),
-                    ScaleShiftGNMLPLayerSimple(32, 16, context_dim,time_dim,2),
-                    ScaleShiftGNMLPLayerSimple(32, 8, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(16, 4, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(8, self.moai_dim, context_dim,time_dim,1, islast=True),
-            ])
-            self.outmodule = ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 5, islast=True)
-            self.moailayers = ModuleList([
-                    GNMLPLayerSimple(self.moai_dim, self.moai_dim, islast=True),
-                ])
-            self.skip_layers = [4,5,6]
-
-        if self.arch == 'archjaw3':
-            self.layers = ModuleList([
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, 4, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(4, 8, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(8, 16, context_dim,time_dim,2),
-                    ScaleShiftGNMLPLayerSimple(16, 32, context_dim,time_dim,4),
-                    ScaleShiftGNMLPLayerSimple(32, 64, context_dim,time_dim,4),
-                    ScaleShiftGNMLPLayerSimple(64, 128, context_dim,time_dim,4),
-                    ScaleShiftGNMLPLayerSimple(128, 64, context_dim,time_dim,4),
-                    ScaleShiftGNMLPLayerSimple(128, 32, context_dim,time_dim,2),
-                    ScaleShiftGNMLPLayerSimple(64, 16, context_dim,time_dim,2),
-                    ScaleShiftGNMLPLayerSimple(32, 8, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(16, 4, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(8, self.moai_dim, context_dim,time_dim,1, islast=True),
-            ])
-            self.outmodule = ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 5, islast=True)
-            self.moailayers = ModuleList([
-                    GNMLPLayerSimple(self.moai_dim, self.moai_dim, islast=True),
-                ])
-            self.skip_layers = [6,7,8,9,10]
-
-        if self.arch == 'archjaw2':
-            self.layers = ModuleList([
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1, islast=True)
-            ])
-            self.outmodule = ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 5, islast=True)
-            self.moailayers = ModuleList([
-                    GNMLPLayerSimple(self.moai_dim, self.moai_dim, islast=True),
-                ])
-            self.skip_layers = []
-
-        if self.arch == 'archjaw0':
-            self.layers = ModuleList([
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple((2*self.moai_dim), self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple((2*self.moai_dim), self.moai_dim, context_dim,time_dim,1, islast=True)
-            ])
-            self.outmodule = ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 5, islast=True)
-            self.moailayers = ModuleList([
-                    GNMLPLayerSimple(self.moai_dim, self.moai_dim, islast=True),
-                ])
-            self.skip_layers = [3,4]
-
-
-        if self.arch == 'archexp11':
-            self.layers = ModuleList([
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, 256, context_dim,time_dim,16),
-                    ScaleShiftGNMLPLayerSimple(256, 512, context_dim,time_dim,32),
-                    ScaleShiftGNMLPLayerSimple(512, 1024, context_dim,time_dim,64),
-                    ScaleShiftGNMLPLayerSimple(1024, 2048, context_dim,time_dim,128),
-                    ScaleShiftGNMLPLayerSimple(2048, 1024, context_dim,time_dim,64),
-                    ScaleShiftGNMLPLayerSimple((2*1024),512 , context_dim,time_dim,128),
-                    ScaleShiftGNMLPLayerSimple((2*512),256, context_dim,time_dim,32),
-                    ScaleShiftGNMLPLayerSimple((2*256), self.moai_dim, context_dim,time_dim,1, islast=True)
-            ])
-            self.outmodule = ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 5, islast=True)
-            self.moailayers = ModuleList([
-                    GNMLPLayerSimple(self.moai_dim, self.moai_dim, islast=True),
-                ])
-            self.skip_layers = [4,5,6]
-
-        if self.arch == 'archexp10':
-            self.layers = ModuleList([
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple((2*self.moai_dim), self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple((2*self.moai_dim), self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple((2*self.moai_dim), self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple((2*self.moai_dim), self.moai_dim, context_dim,time_dim,1, islast=True)
-            ])
-            self.outmodule = ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 5, islast=True)
-            self.moailayers = ModuleList([
-                    GNMLPLayerSimple(self.moai_dim, self.moai_dim, islast=True),
-                ])
-            self.skip_layers = [5,6,7,8]
-
-
-
-        if self.arch == 'archexp0':
-            self.layers = ModuleList([
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple((2*self.moai_dim), self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple((2*self.moai_dim), self.moai_dim, context_dim,time_dim,1, islast=True)
-            ])
-            self.outmodule = ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 5, islast=True)
-            self.moailayers = ModuleList([
-                    GNMLPLayerSimple(self.moai_dim, self.moai_dim, islast=True),
-                ])
-            self.skip_layers = [3,4]
-
-        if self.arch == 'archexp1':
-            self.layers = ModuleList([
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim,1, islast=True)
-            ])
-            self.moailayers = ModuleList([
-                    GNMLPLayerSimple(self.moai_dim, self.moai_dim, islast=True),
-                ])
-            self.skip_layers = []
-
-        if self.arch == 'archexp2':
-            self.layers = ModuleList([
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, 64, context_dim,time_dim,4),
-                    ScaleShiftGNMLPLayerSimple(64, 32, context_dim,time_dim,2),
-                    ScaleShiftGNMLPLayerSimple(32, 16, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(16, 32, context_dim,time_dim,2),
-                    ScaleShiftGNMLPLayerSimple((2*32), 64, context_dim,time_dim,4),
-                    ScaleShiftGNMLPLayerSimple((2*64), self.moai_dim, context_dim,time_dim,islast=True)
-            ])
-            self.outmodule = ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 5, islast=True)
-            self.moailayers = ModuleList([
-                    GNMLPLayerSimple(self.moai_dim, self.moai_dim, islast=True),
-                ])
-            self.skip_layers = [3,4]
-
-        if self.arch == 'archexp3':
-            self.layers = ModuleList([
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, 64, context_dim,time_dim,4),
-                    ScaleShiftGNMLPLayerSimple(64, 32, context_dim,time_dim,2),
-                    ScaleShiftGNMLPLayerSimple(32, 16, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(16, 8, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple(8, 16, context_dim,time_dim,1),
-                    ScaleShiftGNMLPLayerSimple((2*16), 32, context_dim,time_dim,2),
-                    ScaleShiftGNMLPLayerSimple((2*32), 64, context_dim,time_dim,4),
-                    ScaleShiftGNMLPLayerSimple((2*64), self.moai_dim, context_dim,time_dim,islast=True)
-            ])
-            self.outmodule = ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 5, islast=True)
-            self.moailayers = ModuleList([
-                    GNMLPLayerSimple(self.moai_dim, self.moai_dim, islast=True),
-                ])
-            self.skip_layers = [4,5,6]
-
-        if self.arch == 'archexp4':
-            self.layers = ModuleList([
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, 256, context_dim,time_dim,16),
-                    ScaleShiftGNMLPLayerSimple(256, 512, context_dim,time_dim,32),
-                    ScaleShiftGNMLPLayerSimple(512, 256, context_dim,time_dim,16),
-                    ScaleShiftGNMLPLayerSimple(256, self.moai_dim, context_dim,time_dim,islast=True)
-            ])
-            self.moailayers = ModuleList([
-                    GNMLPLayerSimple(self.moai_dim, self.moai_dim, islast=True),
-                ])
-            self.skip_layers = []
-
-        if self.arch == 'archv0':
-            self.layers = ModuleList([
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, 200, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(200, 100, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(100, 50, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(50, 25, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(25, 10, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(10, 25, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(50, 50, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(100, 100, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(200, 200, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(400, 300, context_dim,time_dim, 5, True)
-                ])
-            self.outmodule = ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 5, True)
-            self.moailayers = ModuleList([
-                    GNMLPLayerSimple(self.moai_dim, self.moai_dim, islast=True),
-                ])
-            self.skip_layers = [5,6,7,8]
-
         if self.arch == 'archv4':
             self.layers = ModuleList([
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, 200, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(200, 100, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(100, 50, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(50, 100, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(200, 200, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(400, 300, context_dim,time_dim, 5, True)
+                    ScaleShiftGNMLPLayerSimple(self.moai_dim, 256, context_dim,time_dim, 8),
+                    ScaleShiftGNMLPLayerSimple(256, 128, context_dim,time_dim, 8),
+                    ScaleShiftGNMLPLayerSimple(128, 64, context_dim,time_dim, 8),
+                    ScaleShiftGNMLPLayerSimple(64, 32, context_dim,time_dim, 4),
+                    ScaleShiftGNMLPLayerSimple(32, 64, context_dim,time_dim, 8),
+                    ScaleShiftGNMLPLayerSimple(64*2, 128, context_dim,time_dim, 8),
+                    ScaleShiftGNMLPLayerSimple(128*2, 256, context_dim,time_dim, 8),
+                    ScaleShiftGNMLPLayerSimple(256*2, self.moai_dim, context_dim,time_dim, 2, True)
                 ])
-            self.outmodule = ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 5, True)
-            #self.moailayers = ModuleList([
-            #        GNMLPLayerSimple(self.moai_dim, self.moai_dim, islast=True),
-            #    ])
-            self.skip_layers = [3,4]
-
-        if self.arch == 'archv3':
-            self.layers = ModuleList([
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, 200, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(200, 100, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(100, 50, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(50, 25, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(25, 50, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(100, 100, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(200, 200, context_dim,time_dim, 5),
-                    ScaleShiftGNMLPLayerSimple(400, 300, context_dim,time_dim, 5, True)
-                ])
-            self.outmodule = ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 5, True)
-            self.moailayers = ModuleList([
-                    GNMLPLayerSimple(self.moai_dim, self.moai_dim, islast=True),
-                ])
+            self.outmodule = ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 2, True)
             self.skip_layers = [4,5,6]
 
-        if self.arch == 'archv2':
-            self.layers = ModuleList([
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 1),
-                    ScaleShiftGNMLPLayerSimple(self.moai_dim, self.moai_dim, context_dim,time_dim, 1, True),
-                ])
-            self.moailayers = ModuleList([
-                    GNMLPLayerSimple(self.moai_dim, self.moai_dim, islast=True),
-                ])
-            self.skip_layers = []
         self.time_dim = time_dim
 
     def forward(self, x, t, context):
@@ -474,7 +253,7 @@ class MoaiParamDiffusion(Module):
         self.tag = tag
         self.device = device
 
-    def decode(self, epoch, moaiparam_x0, context, moai=None): 
+    def decode(self, epoch, moaiparam_x0, context): 
         """
         Args:
             moaiparam_x0:  Input moai parameters, (B, N, d) ==> Batch_size X Number of points X point_dim(3).
@@ -486,48 +265,16 @@ class MoaiParamDiffusion(Module):
         t = None
         if t == None:
             t = self.var_sched.uniform_sample_t(batch_size)
-
-        #moaiparam_x0 *= 0.01
-        #print(np.std(moaiparam_x0[0].cpu().numpy()))
-        #print(np.mean(moaiparam_x0[0].cpu().numpy()))
-
-        #print("min max {} {}".format(torch.min(moaiparam_x0,1)[0], torch.max(moaiparam_x0,1)[0]))
-        #print(moaiparam_x0[0:10])
-        #print(torch.std_mean(moaiparam_x0[0]))
-        #print(torch.std_mean(moaiparam_x0[0,100:]))
-        #print(moaiparam_x0[0,100:])
         moaiparam_xt, e_rand = self.get_train_mesh_sample(moaiparam_x0, t, epoch)
-        #print("min max {} {}".format(torch.min(moaiparam_xt,1)[0], torch.max(moaiparam_xt,1)[0]))
-        #exit()
-#        print(moaiparam_xt.shape, flush=True)
-        #meshxt,_,_= moai(shape_params=moaiparam_xt[0].unsqueeze(0).float()) 
-        #trimesh.Trimesh(vertices=moaiparam_xt[0].squeeze().cpu().numpy()).export('mesh_xt_0.ply')
-        #meshxt,_,_= moai(shape_params=moaiparam_xt[1].unsqueeze(0).float()) 
-        #trimesh.Trimesh(vertices=moaiparam_xt[1].squeeze().cpu().numpy()).export('mesh_xt_1.ply')
-        #print(torch.std_mean(moaiparam_xt[0]))
-        #print(torch.std_mean(moaiparam_xt[1]), flush=True)
-        #exit()
-#        meshxt,_,_= moai(shape_params=moaiparam_xt[2].unsqueeze(0).float()) 
-#        trimesh.Trimesh(vertices=meshxt.squeeze().cpu().numpy()).export('mesh_xt_2.ply')
-#        meshxt,_,_= moai(shape_params=moaiparam_xt[3].unsqueeze(0).float()) 
-#        trimesh.Trimesh(vertices=meshxt.squeeze().cpu().numpy()).export('mesh_xt_3.ply')
-#        meshxt,_,_= moai(shape_params=moaiparam_xt[4].unsqueeze(0).float()) 
-#        trimesh.Trimesh(vertices=meshxt.squeeze().cpu().numpy()).export('mesh_xt_4.ply')
-#        meshxt,_,_= moai(shape_params=moaiparam_xt[5].unsqueeze(0).float()) 
-#        trimesh.Trimesh(vertices=meshxt.squeeze().cpu().numpy()).export('mesh_xt_5.ply')
-#        meshxt,_,_= moai(shape_params=moaiparam_xt[6].unsqueeze(0).float()) 
-#        trimesh.Trimesh(vertices=meshxt.squeeze().cpu().numpy()).export('mesh_xt_6.ply')
-#        #print("min max {} {}".format(torch.min(moaiparam_xt[6],0)[0], torch.max(moaiparam_xt[6],0)[0]))
-#        exit()
-        #print(np.std(moaiparam_xt[0].cpu().numpy()))
-        #print(np.mean(moaiparam_xt[0].cpu().numpy()), flush=True)
         predmoaiparam_x0 = None
         getmoaiparam_x0 = False
 
         pred_theta, pred_moai, pred_moaiparam_x0 = self.get_network_prediction(moaiparam_xt=moaiparam_xt, t=t, context=context, prednoise=True, getmeshx0=True)
-        meanxt = self.get_meanxt(moaiparam_xt, t, e_rand)
+        
+        return pred_theta.view(batch_size,-1), e_rand.view(batch_size, -1), pred_moaiparam_x0
+        #meanxt = self.get_meanxt(moaiparam_xt, t, e_rand)
         #return pred_theta.view(batch_size,-1), e_rand.view(batch_size, -1), predmoaiparam_x0*100
-        return pred_theta.view(batch_size,-1), e_rand.view(batch_size, -1), pred_moai, pred_moaiparam_x0, meanxt
+        #return pred_theta.view(batch_size,-1), e_rand.view(batch_size, -1), pred_moai, pred_moaiparam_x0, meanxt
         #return pred_theta.view(batch_size,-1), e_rand.view(batch_size, -1), pred_theta.view(batch_size, -1)
         #return pred_theta.view(batch_size,-1)
 

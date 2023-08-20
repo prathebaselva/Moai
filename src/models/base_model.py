@@ -22,7 +22,7 @@ import torch
 import torch.nn as nn
 import sys
 from src.configs.config import cfg
-from src.utils.masking import Masking
+#from src.utils.masking import Masking
 
 
 class BaseModel(nn.Module):
@@ -34,14 +34,14 @@ class BaseModel(nn.Module):
             self.cfg = config
 
         self.tag = tag
-        self.use_mask = self.cfg.train.use_mask
+        #self.use_mask = self.cfg.train.use_mask
         self.device = device
-        self.masking = Masking(config)
+        #self.masking = Masking(config)
         self.testing = self.cfg.model.testing
         self.validation = self.cfg.model.validation
-        self.landmark = self.cfg.model.landmark
-        self.uniform = self.cfg.model.uniform
-        self.use_reg = self.cfg.model.use_reg
+        #self.landmark = self.cfg.model.landmark
+        #self.uniform = self.cfg.model.uniform
+        #self.use_reg = self.cfg.model.use_reg
         self.with_exp = self.cfg.model.with_exp
         self.sampling = self.cfg.model.sampling
 
@@ -49,7 +49,7 @@ class BaseModel(nn.Module):
         #self.create_flame(self.cfg.model)
         self.create_model(self.cfg.model)
         self.load_model()
-        self.setup_renderer(self.cfg.model)
+        #self.setup_renderer(self.cfg.model)
 
         #self.create_weights()
 

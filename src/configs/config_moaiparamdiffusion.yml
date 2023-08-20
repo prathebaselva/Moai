@@ -7,16 +7,17 @@ modelname: 'moaiparamdiffusion_model'
 dataset:
   root: 'data'
   num_workers: 1
-  training_data: ['train']
-  validation_data: ['val']
+  training_data: ['moai']
+  validation_data: ['moai']
   batch_size: 64
   n_images: 4
 
 model:
   use_pretrained: False
-  n_shape: 224
-  n_exp: 256
-  n_pose: 4
+  n_shape: 256
+  n_exp: 233
+  n_rot: 12
+  n_pupil: 1
   name: 'moaiparamdiffusion_model'
   with_exp: True
   with_val: False
@@ -27,7 +28,7 @@ net:
   tag: 'moaiparamdiffusion_archv4_step1000_lr1e3_flame23'
   losstype: 'l1'
   arch: 'archv4'
-  flame_dim: 224+256
+  moai_dim: 502 
   context_dim: 512
 
 varsched:
@@ -40,7 +41,6 @@ train:
   arcface_lr: 1e-4
   diff_lr: 1e-3
   weight_decay: 1e-4
-  use_mask: False
   max_steps: 2000000
   log_steps: 50
   val_steps: 5

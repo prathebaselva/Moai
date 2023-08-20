@@ -6,7 +6,7 @@ from yacs.config import CfgNode as CN
 cfg = CN()
 
 cfg.root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../'))
-cfg.dir_name = 'DIFFFACE'
+cfg.dir_name = 'MOAI'
 cfg.device = 'cuda'
 cfg.pretrained_model_path = os.path.join(cfg.root_dir, cfg.dir_name, 'pretrained', 'best.pt')
 cfg.output_dir = os.path.join(cfg.root_dir, cfg.dir_name, 'output')
@@ -21,8 +21,10 @@ cfg.model.name = ''
 cfg.model.pretrainname = ''
 
 cfg.model.topology_path = os.path.join(cfg.root_dir, 'head_template.obj')
-cfg.model.n_shape = 224
-cfg.model.n_exp = 256
+cfg.model.n_shape = 256
+cfg.model.n_exp = 233
+cfg.model.n_rot = 12
+cfg.model.n_pupil = 1
 cfg.model.n_pose = 4
 cfg.model.n_tex = 200
 cfg.model.n_cam = 3
@@ -45,10 +47,10 @@ cfg.model.arcface_pretrained_model = os.path.join(cfg.root_dir, 'pretrained/arcf
 
 cfg.net = CN()
 cfg.net.shape_dim = 7756*3
-cfg.net.flame_dim = 224+256+4
+cfg.net.moai_dim = 502
 cfg.net.context_dim = 512
 cfg.net.time_dim = 512
-cfg.net.arch = 'simpleflame'
+cfg.net.arch = 'simplemoai'
 cfg.net.residual = 'unet'
 cfg.net.tag = ''
 cfg.net.losstype = 'l1'

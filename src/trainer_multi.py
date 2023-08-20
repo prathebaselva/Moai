@@ -36,7 +36,7 @@ import shutil
 #from src.utils.MICA.renderer import MeshShapeRenderer
 
 sys.path.append("./src")
-from validator import Validator
+#from validator import Validator
 
 
 def print_info(rank):
@@ -172,7 +172,8 @@ class Trainer(object):
         images = images.view(-1, images.shape[-3], images.shape[-2], images.shape[-1])
         # Moai parameters
         moai = batch['moai']
-        exp = batch['exp']
+        mesh3d = batch['mesh3d']
+        #exp = batch['exp']
 
         # arcface images
         arcface = batch['arcface']
@@ -190,7 +191,8 @@ class Trainer(object):
         else:
             encoder_output = self.model.encode(images, arcface)
         encoder_output['moai'] = moai
-        encoder_output['exp'] = exp
+        encoder_output['mesh3d'] = mesh3d 
+        #encoder_output['exp'] = exp
 
 
         #logger.info(exp)
@@ -211,23 +213,10 @@ class Trainer(object):
         opdict = \
             {
                 'images': images,
-                'moai_verts_shape': decoder_output['moai_verts_shape'],
             }
 
-        if 'pred_canonical_shape_vertices' in decoder_output:
-            opdict['pred_canonical_shape_vertices']= decoder_output['pred_canonical_shape_vertices']
-        if 'deca' in decoder_output:
-            opdict['deca'] = decoder_output['deca']
-        if 'pred_moai_vertices' in decoder_output:
-            opdict['pred_moai_vertices'] = decoder_output['pred_moai_vertices']
-        if 'fpred_moai_vertices' in decoder_output:
-            opdict['fpred_moai_vertices'] = decoder_output['fpred_moai_vertices']
-        if 'dpred_moai_vertices' in decoder_output:
-            opdict['dpred_moai_vertices'] = decoder_output['dpred_moai_vertices']
-        if 'add_pred_moai_vertices' in decoder_output:
-            opdict['add_pred_moai_vertices'] = decoder_output['add_pred_moai_vertices']
-        if 'sample_canonical_shape_vertices' in decoder_output:
-            opdict['sample_canonical_shape_vertices'] = decoder_output['sample_canonical_shape_vertices']
+        if 'pred_mesh3d' in decoder_output:
+            opdict['pred_mesh3d']= decoder_output['pred_mesh3d']
 
         return losses, opdict
 
@@ -297,7 +286,7 @@ class Trainer(object):
                 self.optimizer.zero_grad()
                 losses, opdict = self.training_step(batch)
                 all_loss = losses['all_loss']
-                batch_size = batch['exp'].shape[0]
+                batch_size = batch['mesh3d'].shape[0]
                 #if not self.withval:
                 epochtrainloss += (batch_size * all_loss.item())
                 epochtraincount += batch_size
@@ -322,22 +311,11 @@ class Trainer(object):
                     logger.info(loss_info)
 
                 #print("output dir = ", self.cfg.output_dir, flush=True)
-                if visualizeTraining and self.device == 0:
-                   moaiverts = trimesh.points.PointCloud(opdict['moai_verts_shape'][0].clone().detach().cpu().numpy())
-                   moaiverts.export(os.path.join(self.cfg.output_dir,  str(self.global_step)+'_'+str(self.cfg.net.tag)+ '_moaiverts.ply')) 
-                   if 'pred_canonical_shape_vertices' in opdict and opdict['pred_canonical_shape_vertices'] is not None:
-                       predverts = trimesh.points.PointCloud(opdict['pred_canonical_shape_vertices'][0].clone().detach().cpu().numpy())
-                       predverts.export(os.path.join(self.cfg.output_dir, str(self.global_step)+'_'+str(self.cfg.net.tag)+'_predverts.ply'))
-                   if 'sample_canonical_shape_vertices' in opdict and opdict['sample_canonical_shape_vertices'] is not None:
-                       sampverts = trimesh.points.PointCloud(opdict['sample_canonical_shape_vertices'][0].clone().detach().cpu().numpy())
-                       sampverts.export(os.path.join(self.cfg.output_dir, str(self.global_step)+'_'+str(self.cfg.net.tag)+'_sampverts.ply'))
-                   if 'pred_meshx0_shape_vertices' in opdict and opdict['pred_meshx0_shape_vertices'] is not None:
-                       meshx0verts = trimesh.points.PointCloud(opdict['pred_meshx0_shape_vertices'][0].clone().detach().cpu().numpy())
-                       meshx0verts.export(os.path.join(self.cfg.output_dir, str(self.global_step)+'_'+str(self.cfg.net.tag)+'_meshx0verts.ply'))
-                   if 'pred_moai_vertices' in opdict and opdict['pred_moai_vertices'] is not None:
-                       predverts = trimesh.points.PointCloud(opdict['pred_moai_vertices'][0].clone().detach().cpu().numpy())
-                       predverts.export(os.path.join(self.cfg.output_dir, str(self.global_step)+'_'+str(self.cfg.net.tag)+'_predmoaiverts.ply'))
 
+                if visualizeTraining and self.device == 0:
+                    if 'pred_mesh3d' in opdict and opdict['pred_mesh3d'] is not None:
+                        pred_mesh3d = trimesh.points.PointCloud(opdict['pred_mesh3d'][0].clone().detach().cpu().numpy())
+                        pred_mesh3d.export(os.path.join(self.cfg.output_dir,  str(self.global_step)+'_'+str(self.cfg.net.tag)+ '_mesh3d.ply')) 
 
                 if (self.global_step > 1000) and self.global_step % self.cfg.train.checkpoint_epochs_steps == 0:
                     self.save_checkpoint(os.path.join(self.cfg.output_dir, 'model_'+str(self.cfg.net.tag)+'.tar'))
@@ -354,6 +332,7 @@ class Trainer(object):
                 epochloss = epochloss / epochcount
                 if epoch > 10 and epochloss < self.val_best_loss:
                 #if epochloss < self.val_best_loss:
+                    os.makedirs(os.path.join(self.cfg.output_dir, 'best_models'), exist_ok=True)
                     self.save_checkpoint(os.path.join(self.cfg.output_dir, 'best_models', 'model_val_'+str(self.cfg.net.tag)+'.tar'))
                     self.val_best_loss = epochloss
 
@@ -362,6 +341,7 @@ class Trainer(object):
             if epochtrainloss < self.train_best_loss:
                 logger.info(f'best train {epoch}')
                 self.train_best_loss = epochtrainloss
+                os.makedirs(os.path.join(self.cfg.output_dir, 'best_models'), exist_ok=True)
                 self.save_checkpoint(os.path.join(self.cfg.output_dir, 'best_models', 'model_train_'+str(self.cfg.net.tag)+'_best.tar'))
                 #if epoch > 50:
                 #    self.save_checkpoint(os.path.join(self.cfg.output_dir, 'best_models', 'model_train_'+str(self.cfg.net.tag)+'_'+str(epoch)+'_best.tar'))
