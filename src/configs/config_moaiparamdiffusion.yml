@@ -35,7 +35,6 @@ varsched:
   num_steps: 1000
   beta_1: 1e-4
   beta_T: 1e-2
- 
 
 train:
   arcface_lr: 1e-4

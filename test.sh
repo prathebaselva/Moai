@@ -1,0 +1,1 @@
+python test.py --numcheckpoint 1 --cfg './src/configs/config_flameparamdiffusion.yml' --checkpoint './output/config_flameparamdiffusion/best_models/model_train_flameparamdiffusion_decoderv4_step10k_lr1e3_pat50_best_mar10_2PM.tar' --testimgfolder '' --testarcfacefolder '' --testfilenamepath '' --testnumsample 10

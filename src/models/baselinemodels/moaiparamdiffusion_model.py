@@ -163,14 +163,19 @@ class MoaiParamDiffusionModel(BaseModel):
                 pred_rotcode = pred_params[:, 489:501]
                 pred_pupilcode = pred_params[:, 501:502]
                 
-                #pred_moai = MoaiNumpy()
-                #pred_moai.identity = pred_shapeparam
-                #pred_moai.expression = pred_expparam
             elif self.cfg.net.moai_dim == 489:
                 pred_shapecode = pred_params[:, :256]
                 pred_expcode = pred_params[:, 256:489]
             else:
                 pred_shapecode = pred_params
+
+            if epoch % 100:
+                pred_moai = MoaiNumpy()
+                pred_moai.identity = pred_shapeparam
+                pred_moai.expression = pred_expparam
+                pred_mesh3d = pred_moai.vertices
+
+                trimesh.Trimesh(vertices = pred_mesh3d, process=False).export('train.obj')
 
         pred_mesh3d = None
 

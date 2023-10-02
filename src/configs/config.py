@@ -144,13 +144,13 @@ def update_cfg(cfg, cfg_file):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--cfg', type=str, help='cfg file path', required=True)
-    parser.add_argument('--checkpoint1', type=str, help='checkpoint1 location to load', default='shape')
-    parser.add_argument('--checkpoint2', type=str, help='checkpoint2 location to load', default='experssion, jaw')
-    parser.add_argument('--checkpoint3', type=str, help='checkpoint3 location to load', default='pose')
-    parser.add_argument('--checkpoint4', type=str, help='checkpoint4 location to load', default='cam')
+    parser.add_argument('--checkpoint', type=str, help='checkpoint location to load', default='shape')
     parser.add_argument('--numcheckpoint', type=int, help='number of checkpoints', default=1)
     parser.add_argument('--test_dataset', type=str, help='Test dataset path', default='')
-    parser.add_argument('--filename', type=str, help='filename', default='')
+    parser.add_argument('--testfilenamepath', type=str, help='filepath', default='')
+    parser.add_argument('--testimgfolder', type=str, help='imgfolder', default='')
+    parser.add_argument('--testarcfacefolder', type=str, help='arcfacefolder', default='')
+    parser.add_argument('--testnumsample', type=int, help='number samples', default=5)
     
     args = parser.parse_args()
     cfg = get_cfg_defaults()
