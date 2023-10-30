@@ -20,8 +20,8 @@ if __name__ == '__main__':
         exp_name = cfg.cfg_file.split('/')[-1].split('.')[0]
         cfg.output_dir = os.path.join('./output', exp_name)
 
-    cudnn.benchmark = False
-    cudnn.deterministic = True
+    #cudnn.benchmark = False
+    #cudnn.deterministic = True
     torch.cuda.empty_cache()
     num_gpus = torch.cuda.device_count()
 
