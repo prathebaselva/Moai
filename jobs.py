@@ -40,20 +40,21 @@ def setup(rank, world_size, port):
 
 
 def deterministic(rank):
-    torch.manual_seed(rank)
-    torch.cuda.manual_seed(rank)
-    np.random.seed(rank)
-    random.seed(rank)
+    #torch.manual_seed(rank)
+    #torch.cuda.manual_seed(rank)
+    #np.random.seed(rank)
+    #random.seed(rank)
 
-    cudnn.deterministic = True
-    cudnn.benchmark = False
+    #cudnn.deterministic = True
+    #cudnn.benchmark = False
+    pass
 
 
 def test(rank, world_size, cfg, args):
     port = np.random.randint(low=0, high=2000)
     setup(rank, world_size, 12310 + port)
 
-    deterministic(rank)
+    #deterministic(rank)
 
     cfg.model.testing = True
     mica = util.find_model_using_name(model_dir='src.models.baselinemodels', model_name=cfg.model.name)(cfg, rank)
@@ -83,7 +84,7 @@ def train(rank, world_size, cfg):
         yaml.dump(cfg, f, default_flow_style=False)
     # shutil.copy(cfg.cfg_file, os.path.join(cfg.output_dir, 'config.yaml'))
 
-    deterministic(rank)
+    #deterministic(rank)
 
     model = util.find_model_using_name(model_dir='src.models.baselinemodels', model_name=cfg.model.name)(cfg, rank)
     trainer = Trainer(model=model, config=cfg, device=rank)
