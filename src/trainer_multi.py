@@ -227,8 +227,8 @@ class Trainer(object):
         pass
 
     def prepare_data(self):
-        generator = torch.Generator()
-        generator.manual_seed(self.device)
+        #generator = torch.Generator()
+        #generator.manual_seed(self.device)
 
         self.train_dataset, total_images = datasets.build_train(self.cfg.dataset, self.device)
         self.train_dataloader = DataLoader(
@@ -236,9 +236,9 @@ class Trainer(object):
             num_workers=self.cfg.dataset.num_workers,
             shuffle=True,
             pin_memory=False,
-            drop_last=False,
-            worker_init_fn=seed_worker,
-            generator=generator)
+            drop_last=False)
+            #worker_init_fn=seed_worker,
+            #generator=generator)
         self.train_iter = iter(self.train_dataloader)
 
         self.val_dataset, val_total_images = datasets.build_val(self.cfg.dataset, self.device)
@@ -247,9 +247,9 @@ class Trainer(object):
             num_workers=self.cfg.dataset.num_workers,
             shuffle=False,
             pin_memory=False,
-            drop_last=False,
-            worker_init_fn=seed_worker,
-            generator=generator)
+            drop_last=False)
+            #worker_init_fn=seed_worker,
+            #generator=generator)
         self.val_iter = iter(self.val_dataloader)
         logger.info(f'[TRAINER] Training dataset is ready with {len(self.train_dataset)} actors and {total_images} images.')
         logger.info(f'[TRAINER] Validation dataset is ready with {len(self.val_dataset)} actors and {val_total_images} images.')
