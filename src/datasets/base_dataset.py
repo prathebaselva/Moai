@@ -21,6 +21,7 @@ from abc import ABC
 from functools import reduce
 from pathlib import Path
 import cv2
+import clip
 import json
 
 import loguru
@@ -49,7 +50,7 @@ class BaseDataset(Dataset, ABC):
         self.dataset_root = config.root
         self.total_images = 0
         self.config = config
-    
+        self.farlmodel, self.farlpreprocess = clip.load("ViT-B/16", device="cpu")
         self.initialize()
 
     def initialize(self):
@@ -66,6 +67,9 @@ class BaseDataset(Dataset, ABC):
 
         arcface_input = 'arcface_input'
         self.image_folder = arcface_input
+
+        farl_state = torch.load(os.path.join(self.pretrained, "FaRL-Base-Patch16-LAIONFace20M-ep64.pth"))
+        self.farl_model.load_state_dict(farl_state["state_dict"], strict=False)
 
         self.set_smallest_numimages()
 
@@ -145,6 +149,7 @@ class BaseDataset(Dataset, ABC):
 
         images_list = []
         arcface_list = []
+        imagefarl_list = []
         mesh_gt_list = []
         shape_list = []
         expression_list = []
@@ -163,11 +168,13 @@ class BaseDataset(Dataset, ABC):
             #print(imagebasepath, flush=True)
             image_name = image_name[:-4]
             if os.path.exists(image_path):
+                imagefarl = sellf.farlpreprocess(Image.open(image_path))
                 image = np.array(imread(image_path))
                 image = image / 255.
                 images_list.append(image)
                 arcface_image = np.load(self.get_arcface_path(image_path), allow_pickle=True)
                 arcface_list.append(torch.tensor(arcface_image))
+                imagefarl_list.append(torch.tensor(imagefarl))
                 ldmkjson = json.load(open(ldmk_path))
                 mesh_3d = np.array(ldmkjson['all_verts_3d'])/100
                 mesh_gt_list.append(mesh_3d)
@@ -188,6 +195,7 @@ class BaseDataset(Dataset, ABC):
 
         images_array = torch.from_numpy(np.array(images_list)).float()
         arcface_array = torch.stack(arcface_list).float()
+        imagefarl_array = torch.stack(imagefarl_list).float()
         shape_array = torch.from_numpy(np.array(shape_list)).float()
         expression_array = torch.from_numpy(np.array(expression_list)).float()
         rotation_array = torch.from_numpy(np.array(rotation_list)).float()
@@ -202,6 +210,7 @@ class BaseDataset(Dataset, ABC):
         return {
             'image': images_array,
             'arcface': arcface_array,
+            'imagefarl': imagefarl_array,
             'imagename': actor,
             'dataset': self.name,
             'moai': moaiparams,
